@@ -6,7 +6,7 @@
 
 =begin ########################################################################
   Logic:
-    TODO: 1 - User picks whether they want to play as X or O
+    xODO: 1 - User picks whether they want to play as X or O
           TODO: a - X gets to go first
     TODO: 2 - Ask user where they want to go.
     TODO: 3 - Update board with user's choice.
@@ -19,64 +19,122 @@
     TODO: 10 - Update board.
 =end ##########################################################################
 # Accepts hash of cell values - possible values are [x, o, nil]
-def print_board(positions)
+def print_board(positions)  # positions is a hash
   puts
-  puts " #{positions[:a]} | #{positions[:b]} | #{positions[:c]} "
+  puts " #{positions[:a]}  | #{positions[:b]}  | #{positions[:c]} "
   puts "---+---+---"
   puts " #{positions[:d]}  | #{positions[:e]}  | #{positions[:f]}   "
   puts "---+---+---"
-  puts " #{positions[:g]}  | #{positions[:h]}   | #{positions[:i]}   "
+  puts " #{positions[:g]}  | #{positions[:h]}  | #{positions[:i]}   "
   puts
 end
 
-def check_for_win?
-  return bool
+# xODO: Method to determine winner -- if there is winner, returns true and who won, if no winner, returns false only
+def board_has_win?(positions)
+  # x's
+  if## Check for win ################################################
+    # Check for horizontal wins
+    positions[:a] == positions[:b] == positions[:c] or
+    positions[:d] == positions[:e] == positions[:f] or
+    positions[:g] == positions[:h] == positions[:i] or
+
+    # Check for vertical wins
+    positions[:a] == positions[:d] == positions[:g] or
+    positions[:b] == positions[:e] == positions[:h] or
+    positions[:c] == positions[:f] == positions[:i] or
+
+    # Check for diagonal wins
+    positions[:a] == positions[:e] == positions[:i] or
+    positions[:g] == positions[:e] == positions[:c]
+    # End conditional ################################
+
+    # Determine who won -- if x won, he will have one more move than o. If o won, he will have the same amount of moves as x.
+
+    num_of_x = 0
+    num_of_o = 0
+    positions.each do |cell|
+      if cell == "x" ? num_x += 1 : num_of_o += 1
+      end
+    end
+
+    if num_of_x > num_of_o
+      # x won
+      return true, :x
+    else
+      # o won
+      return true, :o
+    end
+  else
+    # No winner yet
+    false
+  end
 end
 
-def check_for_board_empty_spaces?
-  return bool
+# xODO: Check the positions hash -- if all values are filled (not ""), then board is full, end game
+def board_has_empty_spaces?(positions)
+  if positions.has_value?(" ")
+    # Board still has empty cells
+    true
+  else
+    false
+  end
 end
 
-def raw_input msg
+def raw_input(msg)
   puts msg
-  gets.chomp
+  print ">> "
+  input = gets.chomp
+  if input.downcase == "q"
+    return input, true
+  else
+    return input, false
+  end
 end
 
-def reset_correct_input
-  correct_input? = false
+def reset_correct_input(input)
+  input = false
 end
 
 ### Start program ############################################################
+positions = {
+              a: "", b: "", c: "",
+              d: "", e: "", f: "",
+              g: "", h: "", i: ""
+}
 
-continue_game? = true
-x_or_o = {user: "", comp: ""}   # Hash holding which player is x and o
-correct_input? = false
+continue_game_bool = true
+correct_input_bool = false
+player_wants_to_quit_bool = false
+moves_available_bool = true
+is_a_winner_bool = false
 
 begin
-  puts "Welcome to Tic Tac Toe!"
+  puts "Welcome to Tic Tac Toe!\nAt anytime, enter \"q\" to quit\n\n"
 
-
-  while correct_input? == false
-    input = raw_input "Choose x or o"
+  while correct_input_bool == false
+    input, player_wants_to_quit_bool = raw_input "Choose x or o"
     if input == "x" or input == "o"
-      correct_input? = true
+      correct_input_bool = true
     end
   end
 
-  reset_correct_input
+  reset_correct_input(correct_input_bool)
 
   if input == "x"
-    x_or_o[:user] = "x"
-    x_or_o[:comp] = "o"
+    user_is = "x"
+    comp_is = "o"
   else
-    x_or_o[:user] = "o"
-    x_or_o[:comp] = "x"
+    user_is = "o"
+    comp_is = "x"
+  end
+
+  # Play game until there are no moves left or there is a winner
+  while moves_available_bool == true or is_a_winner_bool == false
+    print_board(positions)
+
+    moves_available = false
+
   end
 
 
-
-
-
-  
-
-end until continue_game? == false
+end until continue_game_bool == false or player_wants_to_quit_bool == true
